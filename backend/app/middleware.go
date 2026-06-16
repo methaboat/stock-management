@@ -7,9 +7,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"stock-management/backend/config"
 )
 
-var JwtKey = []byte("stock_management_secret_key_2026")
+var JwtKey = []byte(config.C.JWTSecret)
 
 type Claims struct {
 	Username string `json:"username"`

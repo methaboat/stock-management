@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -13,6 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
+	"stock-management/backend/config"
 )
 
 // Context Keys
@@ -90,16 +90,11 @@ func JSONSuccess(c *gin.Context, data interface{}) {
 
 // Database Operations
 func ConnectDB() error {
-	uri := os.Getenv("MONGODB_URI")
-	if uri == "" {
-		uri = "mongodb://localhost:27017"
-	}
-
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	log.Printf("Connecting to MongoDB at %s...", uri)
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+	log.Printf("Connecting to MongoDB at %s...", config.C.MongoURI)
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(config.C.MongoURI))
 	if err != nil {
 		return err
 	}
@@ -110,7 +105,7 @@ func ConnectDB() error {
 	}
 
 	MongoClient = client
-	DB = client.Database("stock_management")
+	DB = client.Database(config.C.DatabaseName)
 
 	UserCol = DB.Collection("users")
 	ProductsCol = DB.Collection("products")
